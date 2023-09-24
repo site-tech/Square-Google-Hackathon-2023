@@ -2,7 +2,7 @@
   "name": "chatui",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://site-tech.github.io/Square-Google-Hackathon-2023/"
+  "homepage": "https://site-tech.github.io/Square-Google-Hackathon-2023/",
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.418.0",
     "@testing-library/jest-dom": "^5.17.0",
