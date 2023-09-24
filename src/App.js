@@ -1,5 +1,12 @@
 import React, { useState } from "react";
+import AWS from "aws-sdk";
 import "./App.css";
+
+AWS.config.update({
+  accessKeyId: process.env.REACT_APP_ACCESS_KEY_ID,
+  secretAccessKey: process.env.REACT_APP_SECRET_ACCESS_KEY,
+  region: process.env.REACT_APP_REGION,
+});
 
 function App() {
   const [chats, setChats] = useState([
@@ -25,16 +32,45 @@ function App() {
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
 
-    setActiveChat((prevActiveChat) => {
-      const updatedMessages = [...prevActiveChat.messages, newMessage];
-      const updatedChat = { ...prevActiveChat, messages: updatedMessages };
-      setChats((prevChats) =>
-        prevChats.map((chat) =>
-          chat.id === updatedChat.id ? updatedChat : chat,
-        ),
-      );
-      return updatedChat;
+    // Create Lambda service object
+    var lambda = new AWS.Lambda();
+
+    // Setup Lambda parameters
+    var params = {
+      FunctionName: process.env.REACT_APP_LAMBDA_FUNC_NAME,
+      Payload: JSON.stringify({ message: newMessage }), // Your payload here
+    };
+
+    // Invoke Lambda function
+    lambda.invoke(params, function (err, data) {
+      if (err) {
+        console.log(err, err.stack); // an error occurred
+      } else {
+        console.log(data); // successful response
+        const result = JSON.parse(data.Payload);
+
+        // Update the chat window with the result
+        if (result && result.message) {
+          setActiveChat((prevActiveChat) => {
+            const updatedMessages = [
+              ...prevActiveChat.messages,
+              result.message,
+            ];
+            const updatedChat = {
+              ...prevActiveChat,
+              messages: updatedMessages,
+            };
+            setChats((prevChats) =>
+              prevChats.map((chat) =>
+                chat.id === updatedChat.id ? updatedChat : chat,
+              ),
+            );
+            return updatedChat;
+          });
+        }
+      }
     });
+
     setNewMessage("");
   };
 
