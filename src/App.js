@@ -8,6 +8,11 @@ function App() {
   ]);
   const [activeChat, setActiveChat] = useState(chats[0]);
   const [newMessage, setNewMessage] = useState("");
+  const [darkMode, setDarkMode] = useState(true);
+
+  const toggleMode = () => {
+    setDarkMode((prevMode) => !prevMode);
+  };
 
   const handleChatClick = (chat) => {
     setActiveChat(chat);
@@ -34,7 +39,12 @@ function App() {
   };
 
   return (
-    <div className="app">
+    <div className={`app ${darkMode ? "dark-mode" : "light-mode"}`}>
+      <div className="mode-toggle">
+        <button onClick={toggleMode}>
+          {darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        </button>
+      </div>
       <div className="chat-list">
         {chats.map((chat) => (
           <div
