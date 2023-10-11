@@ -16,6 +16,7 @@ function App() {
   const [activeChat, setActiveChat] = useState(chats[0]);
   const [newMessage, setNewMessage] = useState("");
   const [darkMode, setDarkMode] = useState(true);
+  const [showReserveBtn, setShowReserveBtn] = useState(false);
 
   const toggleMode = () => {
     setDarkMode((prevMode) => !prevMode);
@@ -29,6 +30,16 @@ function App() {
     setNewMessage(e.target.value);
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
+  const handleMakeReservation = () => {
+    alert('Reservation made for 6pm at Goodfellas!');
+  }
+
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
 
@@ -38,7 +49,7 @@ function App() {
     // Setup Lambda parameters
     var params = {
       FunctionName: process.env.REACT_APP_LAMBDA_FUNC_NAME,
-      Payload: JSON.stringify({ message: newMessage }), // Your payload here
+      Payload: JSON.stringify({ body:{prompt: newMessage} }), // Your payload here
     };
 
     // Invoke Lambda function
@@ -47,14 +58,23 @@ function App() {
         console.log(err, err.stack); // an error occurred
       } else {
         console.log(data); // successful response
-        const result = JSON.parse(data.Payload);
+        
+        let result;
+
+        if (typeof data.Payload === 'string'){
+          result = JSON.parse(data.Payload);
+        } else if (typeof data.Payload === 'object'){
+          result = data.Payload
+        }
+        debugger;
 
         // Update the chat window with the result
-        if (result && result.message) {
+        if (result && result.body) {
+          
           setActiveChat((prevActiveChat) => {
             const updatedMessages = [
               ...prevActiveChat.messages,
-              result.message,
+              result.body,
             ];
             const updatedChat = {
               ...prevActiveChat,
@@ -67,6 +87,10 @@ function App() {
             );
             return updatedChat;
           });
+
+          if (typeof result.body === 'string' && result.body.indexOf('Here are your top picks from Google!') > -1){
+            setShowReserveBtn(true);
+          }
         }
       }
     });
@@ -102,14 +126,18 @@ function App() {
             </div>
           ))}
         </div>
+        {showReserveBtn && (
+            <button className="reserve-btn" onClick={handleMakeReservation}>Reserve Now at Goodfellas!</button>
+        )}
         <div className="input-area">
           <input
             type="text"
             value={newMessage}
             onChange={handleInputChange}
             placeholder="Type a message..."
+            onKeyDown={handleKeyDown}
           />
-          <button onClick={handleSendMessage}>Send</button>
+          <button onClick={handleSendMessage} >Send</button>
         </div>
       </div>
     </div>
