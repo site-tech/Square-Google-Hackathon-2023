@@ -172,11 +172,12 @@ function App() {
   };
 
   function ReservationModal({ onClose, onReserve }) {
-    const [time, setTime] = useState("");
+    const [hour, setHour] = useState("12");
+    const [minute, setMinute] = useState("00");
     const [period, setPeriod] = useState("AM");
 
     const handleSubmit = () => {
-      onReserve(time, period);
+      onReserve(`${hour}:${minute}`, period);
       onClose();
     };
 
@@ -185,12 +186,21 @@ function App() {
         <div className="modal-content">
           <h2>Reserve a Table</h2>
           <div>
-            <input
-              type="text"
-              placeholder="Enter time (e.g. 6:00)"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-            />
+            <select value={hour} onChange={(e) => setHour(e.target.value)}>
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                <option key={h} value={h < 10 ? `0${h}` : h}>
+                  {h}
+                </option>
+              ))}
+            </select>
+            :
+            <select value={minute} onChange={(e) => setMinute(e.target.value)}>
+              {Array.from({ length: 60 }, (_, i) => i).map((m) => (
+                <option key={m} value={m < 10 ? `0${m}` : m}>
+                  {m < 10 ? `0${m}` : m}
+                </option>
+              ))}
+            </select>
             <select value={period} onChange={(e) => setPeriod(e.target.value)}>
               <option value="AM">AM</option>
               <option value="PM">PM</option>
