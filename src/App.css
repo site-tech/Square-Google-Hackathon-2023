@@ -121,6 +121,7 @@
 }
 
 .chat-window {
+  padding-top: 32px;
   flex: 1;
   display: flex;
   flex-direction: column;

@@ -17,6 +17,7 @@ function App() {
   const [newMessage, setNewMessage] = useState("");
   const [darkMode, setDarkMode] = useState(true);
   const [showReserveBtn, setShowReserveBtn] = useState(false);
+  const [showReserveModal, setShowReserveModal] = useState(false);
 
   const toggleMode = () => {
     setDarkMode((prevMode) => !prevMode);
@@ -37,7 +38,63 @@ function App() {
   };
 
   const handleMakeReservation = () => {
-    alert("Reservation made for 6pm at Goodfellas!");
+    showReservationModal();
+    // makeReservation();
+  };
+
+  const showReservationModal = () => {
+    setShowReserveModal(true);
+  };
+
+  const makeReservation = () => {
+    // Create Lambda service object
+    var lambda = new AWS.Lambda();
+
+    // Setup Lambda parameters
+    var params = {
+      FunctionName: process.env.REACT_APP_SQUARE_LAMBDA_NAME,
+    };
+
+    // Invoke Lambda function
+    lambda.invoke(params, function (err, data) {
+      if (err) {
+        console.log(err, err.stack); // an error occurred
+      } else {
+        console.log(data); // successful response
+
+        let result;
+
+        if (typeof data.Payload === "string") {
+          result = JSON.parse(data.Payload);
+        } else if (typeof data.Payload === "object") {
+          result = data.Payload;
+        }
+        // debugger;
+
+        // Update the chat window with the result
+        if (result && result.body) {
+          const tmp = JSON.parse(result.body).booking;
+          let resMsg = tmp.status + ". " + tmp.seller_note;
+          console.log("msg: ", resMsg);
+          setActiveChat((prevActiveChat) => {
+            const updatedMessages = [
+              ...prevActiveChat.messages,
+              "AI: " + resMsg,
+            ];
+            const updatedChat = {
+              ...prevActiveChat,
+              messages: updatedMessages,
+            };
+            setChats((prevChats) =>
+              prevChats.map((chat) =>
+                chat.id === updatedChat.id ? updatedChat : chat,
+              ),
+            );
+            return updatedChat;
+          });
+        }
+      }
+    });
   };
 
   const handleSendMessage = () => {
@@ -62,7 +119,7 @@ function App() {
 
     // Setup Lambda parameters
     var params = {
-      FunctionName: process.env.REACT_APP_LAMBDA_FUNC_NAME,
+      FunctionName: process.env.REACT_APP_AI_LAMBDA_NAME,
       Payload: JSON.stringify({ body: { prompt: newMessage } }), // Your payload here
     };
 
@@ -156,6 +213,7 @@ function App() {
             Reserve Now at Goodfellas!
           </button>
         )}
+        {showReserveModal && <div>Hi, modal here :)</div>}
         <div className="input-area">
           <input
             type="text"
