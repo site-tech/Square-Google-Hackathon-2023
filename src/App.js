@@ -171,6 +171,38 @@ function App() {
     setNewMessage("");
   };
 
+  function ReservationModal({ onClose, onReserve }) {
+    const [time, setTime] = useState("");
+    const [period, setPeriod] = useState("AM");
+
+    const handleSubmit = () => {
+      onReserve(time, period);
+      onClose();
+    };
+
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>Reserve a Table</h2>
+          <div>
+            <input
+              type="text"
+              placeholder="Enter time (e.g. 6:00)"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+            />
+            <select value={period} onChange={(e) => setPeriod(e.target.value)}>
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+          <button onClick={handleSubmit}>Reserve</button>
+          <button onClick={onClose}>Close</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`app ${darkMode ? "dark-mode" : "light-mode"}`}>
       <div className="mode-toggle">
@@ -213,7 +245,15 @@ function App() {
             Reserve Now at Goodfellas!
           </button>
         )}
-        {showReserveModal && <div>Hi, modal here :)</div>}
+
+        {showReserveModal && (
+          <ReservationModal
+            onClose={() => setShowReserveModal(false)}
+            onReserve={(time, period) => {
+              alert(`Reservation made for ${time} ${period} at Goodfellas!`);
+            }}
+          />
+        )}
         <div className="input-area">
           <input
             type="text"
