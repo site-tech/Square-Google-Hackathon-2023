@@ -10,8 +10,8 @@ AWS.config.update({
 
 function App() {
   const [chats, setChats] = useState([
-    { id: 1, name: "GoogleAISquare", messages: ["Add your prompt"] },
-    { id: 2, name: "Pizza order", messages: ["Hey", "What’s up?"] },
+    { id: 1, name: "GoogleAISquare", messages: ["AI: Add your prompt"] },
+    { id: 2, name: "Pizza order", messages: ["Me: Hey", "What’s up?"] },
   ]);
   const [activeChat, setActiveChat] = useState(chats[0]);
   const [newMessage, setNewMessage] = useState("");
@@ -31,17 +31,31 @@ function App() {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       handleSendMessage();
     }
   };
 
   const handleMakeReservation = () => {
-    alert('Reservation made for 6pm at Goodfellas!');
-  }
+    alert("Reservation made for 6pm at Goodfellas!");
+  };
 
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
+
+    setActiveChat((prevActiveChat) => {
+      const updatedMessages = [...prevActiveChat.messages, "Me: " + newMessage];
+      const updatedChat = {
+        ...prevActiveChat,
+        messages: updatedMessages,
+      };
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === updatedChat.id ? updatedChat : chat,
+        ),
+      );
+      return updatedChat;
+    });
 
     // Create Lambda service object
     var lambda = new AWS.Lambda();
@@ -49,7 +63,7 @@ function App() {
     // Setup Lambda parameters
     var params = {
       FunctionName: process.env.REACT_APP_LAMBDA_FUNC_NAME,
-      Payload: JSON.stringify({ body:{prompt: newMessage} }), // Your payload here
+      Payload: JSON.stringify({ body: { prompt: newMessage } }), // Your payload here
     };
 
     // Invoke Lambda function
@@ -58,23 +72,22 @@ function App() {
         console.log(err, err.stack); // an error occurred
       } else {
         console.log(data); // successful response
-        
+
         let result;
 
-        if (typeof data.Payload === 'string'){
+        if (typeof data.Payload === "string") {
           result = JSON.parse(data.Payload);
-        } else if (typeof data.Payload === 'object'){
-          result = data.Payload
+        } else if (typeof data.Payload === "object") {
+          result = data.Payload;
         }
-        debugger;
+        // debugger;
 
         // Update the chat window with the result
         if (result && result.body) {
-          
           setActiveChat((prevActiveChat) => {
             const updatedMessages = [
               ...prevActiveChat.messages,
-              result.body,
+              "AI: " + result.body,
             ];
             const updatedChat = {
               ...prevActiveChat,
@@ -88,7 +101,10 @@ function App() {
             return updatedChat;
           });
 
-          if (typeof result.body === 'string' && result.body.indexOf('Here are your top picks from Google!') > -1){
+          if (
+            typeof result.body === "string" &&
+            result.body.indexOf("Here are your top picks from Google!") > -1
+          ) {
             setShowReserveBtn(true);
           }
         }
@@ -121,13 +137,24 @@ function App() {
       <div className="chat-window">
         <div className="messages">
           {activeChat.messages.map((message, index) => (
-            <div key={index} className="message">
-              {message}
+            <div
+              key={index}
+              className={`message ${
+                message.startsWith("AI:")
+                  ? "ai-message"
+                  : message.startsWith("Me:")
+                  ? "me-message"
+                  : ""
+              }`}
+            >
+              {message.split(": ")[1]}
             </div>
           ))}
         </div>
         {showReserveBtn && (
-            <button className="reserve-btn" onClick={handleMakeReservation}>Reserve Now at Goodfellas!</button>
+          <button className="reserve-btn" onClick={handleMakeReservation}>
+            Reserve Now at Goodfellas!
+          </button>
         )}
         <div className="input-area">
           <input
@@ -137,7 +164,7 @@ function App() {
             placeholder="Type a message..."
             onKeyDown={handleKeyDown}
           />
-          <button onClick={handleSendMessage} >Send</button>
+          <button onClick={handleSendMessage}>Send</button>
         </div>
       </div>
     </div>

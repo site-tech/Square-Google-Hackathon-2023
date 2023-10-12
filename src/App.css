@@ -12,10 +12,34 @@
   z-index: 1000;
 }
 
+.ai-message {
+  text-align: left;
+  color: black;
+  background-color: #b9b9b9;
+  margin-right: 55%;
+  margin-left: 10%;
+}
+
+.me-message {
+  text-align: left;
+  background-color: #7e3de6;
+  margin-left: 55%;
+  margin-right: 10%;
+}
+
 /* Light Mode Styles */
 .light-mode {
   color: #000;
   background-color: #f4f4f4;
+}
+
+.light-mode .chat-window .messages .me-message {
+  background-color: #7e3de6;
+  color: white;
+}
+
+.light-mode .chat-window .messages .ai-message {
+  background-color: #b9b9b9;
 }
 
 .light-mode .chat-list,
@@ -57,7 +81,7 @@
   background-color: #1e1e1e;
 }
 
-.dark-mode .message {
+.dark-mode {
   background-color: #333333;
 }
 
@@ -118,6 +142,8 @@
 .input-area {
   display: flex;
   padding: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
 }
 
 input {
