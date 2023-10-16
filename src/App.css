@@ -3,14 +3,66 @@
   display: flex;
   height: 100vh;
   font-family: "Arial", sans-serif;
+  flex-direction: column;
+}
+
+.header{
+  display: flex;
+}
+
+.menu-icon {
+  position: relative;
+  top: 20px;
+  left: 20px;
+  font-size:x-large;
 }
 
 .mode-toggle {
-  position: absolute;
-  top: 10px;
+  position:absolute;
+  top: 100px;
   right: 10px;
   z-index: 1000;
 }
+.header-title {
+  width: 100%;
+  text-align: center;
+}
+
+.nav-slider {
+  position: fixed;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+  z-index: 999;
+  transition: left 0.3s ease;
+  padding-top: 60px;
+}
+
+.nav-slider a {
+  display: block;
+  padding: 15px;
+  text-decoration: none;
+  color: #333;
+  font-size: 18px;
+  transition: 0.3s;
+}
+
+.nav-slider a:hover {
+  background-color: #f2f2f2;
+}
+
+.nav-slider.show {
+  left: 0;
+}
+
+.chat-container {
+  display: grid;
+  grid-template-columns: 20% 80%;
+  height: 100vh
+}
+
 
 .modal-overlay {
   position: fixed;
@@ -125,7 +177,6 @@
 
 /* Other Styles */
 .chat-list {
-  width: 200px;
   overflow-y: auto;
   border-right: 1px solid #444;
 }
@@ -161,6 +212,9 @@
 }
 
 .input-area {
+  position: fixed;
+  bottom: 0;
+  width: 60vw;
   display: flex;
   padding: 10px;
   margin-left: 10%;
@@ -182,4 +236,10 @@ button {
   cursor: pointer;
   border-radius: 5px;
   transition: background 0.3s;
+}
+
+.chat-title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
