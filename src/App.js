@@ -38,8 +38,8 @@ function App() {
   };
 
   const handleMakeReservation = () => {
-    showReservationModal();
-    // makeReservation();
+    // showReservationModal();
+    makeReservation();
   };
 
   const showReservationModal = () => {
@@ -56,7 +56,7 @@ function App() {
     };
 
     // Invoke Lambda function
-    lambda.invoke(params, function (err, data) {
+    lambda.invoke(params, function(err, data) {
       if (err) {
         console.log(err, err.stack); // an error occurred
       } else {
@@ -124,7 +124,7 @@ function App() {
     };
 
     // Invoke Lambda function
-    lambda.invoke(params, function (err, data) {
+    lambda.invoke(params, function(err, data) {
       if (err) {
         console.log(err, err.stack); // an error occurred
       } else {
@@ -224,9 +224,8 @@ function App() {
         {chats.map((chat) => (
           <div
             key={chat.id}
-            className={`chat-summary ${
-              activeChat.id === chat.id ? "active" : ""
-            }`}
+            className={`chat-summary ${activeChat.id === chat.id ? "active" : ""
+              }`}
             onClick={() => handleChatClick(chat)}
           >
             {chat.name}
@@ -238,13 +237,12 @@ function App() {
           {activeChat.messages.map((message, index) => (
             <div
               key={index}
-              className={`message ${
-                message.startsWith("AI:")
+              className={`message ${message.startsWith("AI:")
                   ? "ai-message"
                   : message.startsWith("Me:")
-                  ? "me-message"
-                  : ""
-              }`}
+                    ? "me-message"
+                    : ""
+                }`}
             >
               {message.split(": ")[1]}
             </div>
