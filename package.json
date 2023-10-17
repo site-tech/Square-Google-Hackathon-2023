@@ -2,7 +2,7 @@
   "name": "chatui",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://site-tech.github.io/Square-Google-Hackathon-2023/",
+  "homepage": "https://ay-more-ui-changes.d2igogagha9nu.amplifyapp.com/",
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.418.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
